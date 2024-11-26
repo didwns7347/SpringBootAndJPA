@@ -1,6 +1,7 @@
 package jpabook.jpashop.domain;
 
 import jakarta.persistence.*;
+import jpabook.jpashop.domain.item.Item;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,6 +47,45 @@ public class Order {
     public void setDelivery(Delivery delivery) {
         this.delivery = delivery;
         delivery.setOrder(this);
+    }
+
+    //==생성 메서드==//
+    public static Order createOrder(Member member, Delivery delivery ,OrderItem... orderItems) {
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for (OrderItem orderItem: orderItems) {
+            order.addOrderItem(orderItem);
+        }
+
+        order.setStatus(OrderStatus.ORDER);
+        return order;
+    }
+
+    /**
+     * order cancel
+     */
+    public  void cancel() {
+        if (delivery.getStatus() == DeliveryStatus.COMP) {
+            throw  new IllegalStateException("alredy deliveried");
+        }
+
+        this.setStatus(OrderStatus.CANCEL);
+        for (OrderItem orderitem : orderitems) {
+            orderitem.cancel();
+        }
+    }
+
+
+    //==조회로직==//
+    /**
+     * 전체 주문 가격 조회
+     * @return
+     */
+    public int getTotalPrice() {
+        return orderitems.stream()
+                .mapToInt(OrderItem::getTotalPrice)
+                .sum();
     }
 
 }
