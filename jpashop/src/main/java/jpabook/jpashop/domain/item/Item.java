@@ -38,7 +38,7 @@ public abstract class Item {
     }
 
     /**
-     * stock sub
+     *  stock sub
      */
     public void removeStock(int stockQuantity) {
         int restStock = this.stockQuantity - stockQuantity;
